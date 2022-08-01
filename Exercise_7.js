@@ -3,21 +3,16 @@
 // times)
 
 const arr = [3, "a", "a", "a", 2, 3, "a", 3, "a", 2, 4, 9, 3];
-let maxFreq = 0;
-let counter = 0;
-let value;
-for (let i = 0; i < arr.length; i++) {
-  for (let j = i; j < arr.length; j++) {
-    if (arr[i] == arr[j]) counter++;
-    if (maxFreq < counter) {
-      maxFreq = counter;
-      value = arr[i];
-    }
-  }
-  counter = 0;
-}
-console.log(`${value} ( ${maxFreq} times)`);
 
-// PS C:\Users\upadh\Desktop\Assignment\JS-Nodejs_Exercises> node Exercise_7.js
-// a ( 5 times)
-// PS C:\Users\upadh\Desktop\Assignment\JS-Nodejs_Exercises>
+function mostFrequentValue(arr){
+  const dataFrequency = arr.reduce((acc, curr) => {
+    acc[curr] = (acc[curr] || 0) + 1;
+    return acc;
+  },
+  {});
+
+  return Object.keys(dataFrequency).reduce((a,b) => dataFrequency[a] > dataFrequency[b] ? a:b) + " (" + Object.values(dataFrequency).reduce((a,b) => a > b ? a:b) + " times)";
+}
+
+console.log(mostFrequentValue(arr));
+
