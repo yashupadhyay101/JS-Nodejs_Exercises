@@ -5,22 +5,62 @@
 
 const axios = require("axios").default;
 
-function makeAPICall(url) {
-  axios
-    .get(url, { params: { per_page: 35 } })
-    .then((result) => {
-      const mySet = new Set();
-      result.data.map((e) => {
-        mySet.add(e.owner.login);
-      });
-      console.log(mySet);
-    })
-    .catch((error) => {
-      console.log("Error: ", error);
-    });
-}
+// function makeAPICall(url) {
+//   axios
+//     .get(url, { params: { per_page: 35 } })
+//     .then((result) => {
+//       const mySet = new Set();
+//       result.data.map((e) => {
+//         mySet.add(e.owner.login);
+//       });
+//       console.log(mySet);
+//     })
+//     .catch((error) => {
+//       console.log("Error: ", error);
+//     });
+// }
 
-makeAPICall("https://api.github.com/gists/public");
+// makeAPICall("https://api.github.com/gists/public");
+
+var auth_token = "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";
+
+const getPublicGist = async () => {
+  return await axios.get("https://api.github.com/gists/public", {
+    params: { per_page: 35 },
+    headers: { Authorization: `token ${auth_token}` },
+  });
+};
+
+const getSingleGist = async (gist_id) => {
+  return await axios.get("https://api.github.com/gists/" + gist_id, {
+    headers: { Authorization: `token ${auth_token}` },
+  });
+};
+
+const getUniqueUsername = async () => {
+  try {
+    const publicGist = await getPublicGist();
+    const listOfUsers = [];
+    for (const gist of publicGist.data) {
+      const uniqueUsers = new Set();
+      uniqueUsers.clear();
+      const singleGist = await getSingleGist(gist.id);
+      singleGist.data.history.map((e) => {
+        uniqueUsers.add(e.user.login);
+      });
+      listOfUsers.push(Array.from(uniqueUsers));
+    }
+    return listOfUsers;
+  } catch (error) {
+    return error;
+  }
+};
+
+getUniqueUsername()
+  .then((result) => console.log(result))
+  .catch((error) => {
+    console.log(error);
+  });
 
 //Output
 
